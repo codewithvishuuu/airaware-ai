@@ -24,7 +24,8 @@ AirAware AI addresses all three: both indices side by side with the difference e
 
 | Page | What you get |
 |---|---|
-| **Dashboard** `/` | AQI hero with a US/CPCB toggle, pollutant breakdown, seven-day PM2.5 trend, weather context, and an on-demand AI briefing |
+| **Landing** `/` | Editorial marketing page: live modelled reading in the hero, a live data plate, environmental storytelling, six product previews fed by the same endpoint, and the assistant's grounding inputs |
+| **Dashboard** `/dashboard` | AQI hero with a US/CPCB toggle, pollutant breakdown, seven-day PM2.5 trend, weather context, and an on-demand AI briefing |
 | **Assistant** `/assistant` | Multi-turn chat grounded in the live reading. Suggested questions included |
 | **Daily plan** `/plan` | Five chronological actions for today, from a five-question household profile |
 | **Indoor** `/indoor` | A ventilate-or-seal call for today, plus kitchen, dust and purifier guidance |
@@ -167,9 +168,11 @@ app/
   api/air/route.ts        readings + computed CPCB AQI
   api/cities/route.ts     geocoding proxy
   api/ai/route.ts         validated AI gateway, rate limited
-  page.tsx                dashboard
+  page.tsx                landing page
+  dashboard/page.tsx      dashboard
   assistant|plan|indoor|impact|insights/page.tsx
 components/               hero, pollutants, trend, weather, AI states, header
+components/landing/       landing data views, feature previews, reveal observer
 lib/
   aqi.ts                  US + CPCB bands, CPCB computation
   air.ts                  Open-Meteo clients, stale detection
