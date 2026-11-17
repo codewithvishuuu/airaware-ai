@@ -1,50 +1,73 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  AiContextPanel,
-  HeroReading,
-  LiveAirSection,
-} from "@/components/landing/live-air";
+import { AiContextPanel, HeroReading, LiveAirSection } from "@/components/landing/live-air";
 import { FeatureShowcase } from "@/components/landing/feature-showcase";
 import { RevealObserver } from "@/components/landing/reveal-observer";
 import { ArrowIcon, SparkIcon } from "@/components/icons";
-import { SITE_DESCRIPTION } from "@/lib/site";
+import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "AirAware AI | The air around you matters" },
+  title: { absolute: "AirAware AI | The air you breathe. The choices you make." },
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
+  openGraph: {
+    type: "website",
+    url: "/",
+    siteName: SITE_NAME,
+    title: "AirAware AI | The air you breathe. The choices you make.",
+    description: SITE_DESCRIPTION,
+    images: [
+      {
+        url: "/images/hero-city-haze.jpg",
+        width: 1800,
+        height: 1051,
+        alt: "A city skyline dissolving into morning haze above a canopy of trees.",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AirAware AI | The air you breathe. The choices you make.",
+    description: SITE_DESCRIPTION,
+    images: ["/images/hero-city-haze.jpg"],
+  },
 };
 
 const STEPS = [
   {
-    title: "Discover your local air quality",
-    body: "Pick a city or use your location. The dashboard fetches modelled hourly readings and shows what is driving the index, with the US and CPCB values kept separate.",
+    title: "Select your city",
+    body: "Use your location or search for a city. The dashboard fetches modelled hourly readings for that place.",
   },
   {
-    title: "Get AI-powered personalized guidance",
-    body: "Ask the assistant, request a briefing, or build a daily plan. Each request carries the current reading to the model from the server, so the answer has something real to work from.",
+    title: "Read what is actually there",
+    body: "US and CPCB indices stay separate, every pollutant is listed, and the observation time is always visible.",
   },
   {
-    title: "Make informed everyday decisions",
-    body: "Time a walk, change a commute, decide whether to ventilate. Every suggestion stays linked to the reading it came from, and to its limits.",
+    title: "Decide what to do today",
+    body: "Time a walk, change a commute, open a window. Each suggestion stays tied to the reading behind it.",
   },
 ];
 
 const REFUSALS = [
   {
     title: "No invented numbers",
-    body: "If the provider does not return a value, the interface shows the gap. It never fills one in to look complete.",
+    body: "If the provider returns nothing, the interface shows the gap instead of filling it in.",
   },
   {
     title: "No station claims",
-    body: "Every reading is described as modelled, because that is what it is. CPCB figures are calculated here and labelled as estimates.",
+    body: "Readings are described as modelled because that is what they are. CPCB figures are estimates computed here.",
   },
   {
     title: "No medical advice",
-    body: "Guidance describes exposure and comfort. It does not diagnose, prescribe or promise a health outcome.",
+    body: "Guidance describes exposure and comfort. It does not diagnose, prescribe or promise an outcome.",
   },
+];
+
+const LIMITS = [
+  "It cannot see your street, your room or the air inside a building.",
+  "It does not know your medical history and does not offer treatment advice.",
+  "It will not fill a missing reading with a guessed value.",
 ];
 
 export default function LandingPage() {
@@ -52,66 +75,58 @@ export default function LandingPage() {
     <>
       <RevealObserver />
 
-      <section className="relative">
-        <div className="mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
-          <div className="grid gap-10 pb-14 pt-12 sm:pt-16 lg:grid-cols-[1.02fr_0.98fr] lg:gap-0 lg:pb-0 lg:pt-0">
-            <div className="relative z-10 lg:flex lg:min-h-[660px] lg:flex-col lg:justify-center lg:py-24 lg:pr-16">
-              <p className="hero-in text-[11px] font-semibold uppercase tracking-[0.22em] text-ink-muted">
-                Environmental intelligence
-              </p>
-              <h1 className="hero-in mt-6 max-w-[11ch] text-[clamp(2.9rem,6.4vw,5.6rem)] font-semibold leading-[0.95] tracking-[-0.05em] text-ink [animation-delay:90ms]">
-                The air around you matters.
+      <section className="relative border-b border-line">
+        <div className="mx-auto max-w-[1440px]">
+          <div className="grid lg:grid-cols-[minmax(0,0.94fr)_minmax(0,1.06fr)]">
+            <div className="px-5 pb-10 pt-12 sm:px-8 sm:pt-16 lg:flex lg:flex-col lg:justify-center lg:py-20 lg:pl-12 lg:pr-12">
+              <h1 className="hero-in max-w-[20ch] text-[clamp(2.7rem,5vw,4.5rem)] font-semibold leading-[0.98] tracking-[-0.045em] text-ink">
+                The air you breathe.{" "}
+                <span className="mt-1.5 block pb-2 font-serif text-[0.96em] font-normal italic leading-[1.08] tracking-[-0.02em] text-accent sm:text-[0.98em]">
+                  The choices you make.
+                </span>
               </h1>
-              <p className="hero-in mt-7 max-w-[46ch] text-[17px] leading-[1.7] text-ink-soft [animation-delay:180ms]">
-                Understand your environment, discover healthier everyday routines and make more
-                informed choices with AI-powered air quality intelligence.
+
+              <p className="hero-in mt-7 max-w-[42ch] text-[17px] leading-[1.65] text-ink-soft [animation-delay:120ms]">
+                Live, modelled air quality for your city, explained clearly and tied to the choices
+                you make today.
               </p>
 
-              <div className="hero-in mt-9 flex flex-col gap-3 sm:flex-row sm:items-center [animation-delay:260ms]">
+              <div className="hero-in mt-8 flex flex-wrap gap-3 [animation-delay:220ms]">
                 <Link
                   href="#live-air"
-                  className="lift inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-canvas hover:bg-ink"
+                  className="lift inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-accent px-5 py-3 text-sm font-semibold text-white hover:bg-ink"
                 >
                   Explore Air Quality
                   <ArrowIcon className="h-4 w-4" />
                 </Link>
                 <Link
                   href="/assistant"
-                  className="lift inline-flex items-center justify-center gap-2 rounded-full border border-line-strong px-5 py-3 text-sm font-semibold text-ink hover:border-accent hover:bg-surface"
+                  className="lift inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full border border-line-strong px-5 py-3 text-sm font-semibold text-ink hover:border-ink hover:bg-surface"
                 >
                   <SparkIcon className="h-4 w-4" />
-                  Meet Your AI Assistant
+                  Meet AI Assistant
                 </Link>
               </div>
-
-              <p className="hero-in mt-8 max-w-sm text-[11.5px] leading-relaxed text-ink-muted [animation-delay:340ms]">
-                Modelled CAMS data via Open-Meteo. US and CPCB indices kept separate. No account
-                required.
-              </p>
             </div>
 
-            <div className="relative -mx-5 min-h-[430px] sm:-mx-8 sm:min-h-[540px] lg:mx-0 lg:-mr-12 lg:min-h-[660px]">
+            <div className="relative min-h-[440px] sm:min-h-[540px] lg:min-h-[660px]">
               <div className="absolute inset-0 overflow-hidden">
                 <Image
                   src="/images/hero-city-haze.jpg"
                   alt="A city skyline of high-rise towers rising above dense green tree canopy in morning haze."
                   fill
                   preload
-                  sizes="(max-width: 1024px) 100vw, 52vw"
+                  sizes="(max-width: 1024px) 100vw, 53vw"
                   className="parallax object-cover object-center"
                 />
-                <div className="absolute inset-0 bg-accent/[0.07]" aria-hidden="true" />
+                <div className="absolute inset-0 bg-ink/5" aria-hidden="true" />
                 <div
-                  className="absolute inset-0 hidden lg:block lg:bg-[linear-gradient(90deg,#f7f7f2_0%,rgba(247,247,242,0.5)_10%,rgba(247,247,242,0)_32%)]"
-                  aria-hidden="true"
-                />
-                <div
-                  className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-ink/25 to-transparent"
+                  className="absolute inset-0 hidden lg:block lg:bg-[linear-gradient(90deg,#f5f3ee_0%,rgba(245,243,238,0.55)_9%,rgba(245,243,238,0)_26%)]"
                   aria-hidden="true"
                 />
               </div>
 
-              <HeroReading className="absolute bottom-6 left-5 right-5 z-10 sm:left-8 sm:right-8 lg:-left-10 lg:bottom-20 lg:right-auto lg:w-[330px]" />
+              <HeroReading className="absolute bottom-5 left-5 right-5 sm:left-8 sm:right-auto sm:w-[330px] lg:-left-8 lg:bottom-14 lg:w-[320px]" />
             </div>
           </div>
         </div>
@@ -119,66 +134,62 @@ export default function LandingPage() {
 
       <LiveAirSection />
 
-      <section id="about" aria-labelledby="about-heading" className="scroll-mt-24 border-t border-line">
-        <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
-          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
-            <div data-reveal>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-                Why it matters
-              </p>
-              <h2
-                id="about-heading"
-                className="mt-5 max-w-[16ch] text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-[1.04] tracking-[-0.035em] text-ink"
-              >
-                You cannot see the air. You can learn to read it.
-              </h2>
-              <p className="mt-8 max-w-sm font-serif text-[clamp(1.45rem,2.1vw,1.95rem)] italic leading-[1.35] text-accent">
-                The air is shared. What you notice, you can act on.
-              </p>
-            </div>
-
-            <div className="space-y-6 text-[17px] leading-[1.75] text-ink-soft" data-reveal>
-              <p>
-                Air quality is a mixture, not a score. Fine particles, ozone, nitrogen dioxide and
-                sulphur dioxide behave differently, peak at different hours and come from different
-                places.
-              </p>
-              <p>
-                A clear view is not proof of clean air. Haze carries fine particles. Still, cold
-                mornings trap pollution near the ground. Wind can clear one street while carrying
-                smoke into the next.
-              </p>
-              <p>
-                The useful question is not whether today is good or bad. It is what is in the air
-                right now, what is driving it, and what you can reasonably change about the next
-                few hours.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <figure>
-          <div className="relative h-[46vh] min-h-[300px] max-h-[560px] overflow-hidden">
+      <section id="about" aria-labelledby="about-heading" className="border-b border-line">
+        <div className="relative">
+          <div className="relative h-[46vh] min-h-[300px] max-h-[540px] overflow-hidden">
             <Image
               src="/images/story-maidan-haze.jpg"
-              alt="A herder walking a flock of goats across a wide urban maidan, with a single tower and the sun dissolving into morning haze behind them."
+              alt="A herder walking a flock of goats across a wide urban maidan, with a tower and the sun dissolving into morning haze."
               fill
               sizes="100vw"
               className="parallax object-cover object-center"
             />
-            <div className="absolute inset-0 bg-accent/10" aria-hidden="true" />
+            <div className="absolute inset-0 bg-ink/10" aria-hidden="true" />
           </div>
-          <figcaption className="mx-auto max-w-[1440px] px-5 pt-3 text-[11px] text-ink-muted sm:px-8 lg:px-12">
-            Winter Maidan Morning Kolkata, by SukantaBhowmik. CC BY-SA 4.0, Wikimedia Commons.
-          </figcaption>
-        </figure>
 
-        <div className="mx-auto max-w-[1440px] px-5 py-16 sm:px-8 sm:py-20 lg:px-12">
-          <div className="grid gap-8 border-t border-line-strong pt-8 md:grid-cols-3" data-reveal>
+          <div className="relative z-10 -mt-16 max-w-[1080px] bg-canvas px-5 py-9 sm:-mt-20 sm:px-8 sm:py-12 lg:-mt-24 lg:px-12 lg:py-14">
+            <div className="grid gap-10 lg:grid-cols-[0.84fr_1.16fr] lg:gap-16">
+              <div>
+                <h2
+                  id="about-heading"
+                  className="max-w-[15ch] text-[clamp(1.9rem,3.4vw,3rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-ink"
+                >
+                  You cannot see the air. You can learn to read it.
+                </h2>
+                <p className="mt-7 max-w-[24ch] font-serif text-[clamp(1.35rem,1.9vw,1.75rem)] italic leading-[1.3] text-accent">
+                  The air is shared. What you notice, you can act on.
+                </p>
+              </div>
+
+              <div className="space-y-5 text-[16px] leading-[1.75] text-ink-soft">
+                <p>
+                  Air quality is a mixture, not a score. Fine particles, ozone, nitrogen dioxide
+                  and sulphur dioxide behave differently, peak at different hours and come from
+                  different places.
+                </p>
+                <p>
+                  A clear view is not proof of clean air, and a grey morning is not proof of the
+                  worst. Still air traps pollution near the ground while wind moves it between
+                  streets.
+                </p>
+                <p>
+                  The useful question is not whether today is good or bad. It is what is in the
+                  air now, what is driving it, and what you can reasonably change about the next
+                  few hours.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="mx-auto max-w-[1440px] px-5 pb-20 pt-10 sm:px-8 lg:px-12">
+          <div className="grid gap-8 border-t border-line-strong pt-8 md:grid-cols-3 md:gap-12">
             {REFUSALS.map((item) => (
               <div key={item.title}>
                 <h3 className="text-sm font-semibold text-ink">{item.title}</h3>
-                <p className="mt-2 max-w-xs text-sm leading-relaxed text-ink-soft">{item.body}</p>
+                <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-ink-soft">
+                  {item.body}
+                </p>
               </div>
             ))}
           </div>
@@ -190,137 +201,116 @@ export default function LandingPage() {
       <section
         id="how-it-works"
         aria-labelledby="how-heading"
-        className="scroll-mt-24 border-t border-line bg-accent-soft/60"
+        className="border-b border-line bg-accent-soft/40"
       >
-        <div className="mx-auto grid max-w-[1440px] gap-14 px-5 py-20 sm:px-8 sm:py-24 lg:grid-cols-[1.15fr_0.85fr] lg:gap-20 lg:px-12">
-          <div>
-            <div data-reveal>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-                How it works
-              </p>
-              <h2
-                id="how-heading"
-                className="mt-5 max-w-[18ch] text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-[1.04] tracking-[-0.035em] text-ink"
-              >
-                Three steps, no guesswork about where the number came from.
-              </h2>
-            </div>
+        <div className="mx-auto max-w-[1440px] px-5 pb-16 pt-20 sm:px-8 sm:pt-24 lg:px-12">
+          <h2
+            id="how-heading"
+            className="max-w-[24ch] text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-ink"
+          >
+            Three steps, and the source stays attached.
+          </h2>
 
-            <ol className="mt-10" data-reveal>
-              {STEPS.map((step, index) => (
-                <li
-                  key={step.title}
-                  className="grid grid-cols-[56px_1fr] gap-5 border-t border-line-strong py-7 sm:grid-cols-[88px_1fr] sm:gap-8"
-                >
-                  <span className="font-serif text-4xl italic leading-none text-accent/60 sm:text-5xl">
-                    0{index + 1}
-                  </span>
-                  <div>
-                    <h3 className="text-lg font-semibold tracking-[-0.01em] text-ink">
-                      {step.title}
-                    </h3>
-                    <p className="mt-2 max-w-md text-sm leading-relaxed text-ink-soft">
-                      {step.body}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
+          <ol className="mt-12 grid gap-8 md:grid-cols-3 md:gap-10">
+            {STEPS.map((step, index) => (
+              <li key={step.title} className="border-t border-ink/20 pt-6">
+                <span className="font-serif text-4xl italic leading-[1.1] text-accent sm:text-5xl">
+                  0{index + 1}
+                </span>
+                <h3 className="mt-4 text-lg font-semibold tracking-[-0.01em] text-ink">
+                  {step.title}
+                </h3>
+                <p className="mt-2 max-w-sm text-sm leading-relaxed text-ink-soft">{step.body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
 
-            <Link
-              href="/dashboard"
-              className="lift mt-8 inline-flex items-center gap-2 rounded-full bg-accent px-5 py-3 text-sm font-semibold text-canvas hover:bg-ink"
-            >
-              Start with your city
-              <ArrowIcon className="h-4 w-4" />
-            </Link>
-          </div>
-
-          <figure className="relative min-h-[360px] overflow-hidden lg:min-h-[560px]">
-            <Image
-              src="/images/story-fog-street.jpg"
-              alt="A foggy early morning street in Mysuru, framed by tree branches, with an auto-rickshaw disappearing into the mist."
-              fill
-              sizes="(max-width: 1024px) 100vw, 40vw"
-              className="parallax object-cover object-center"
-            />
-            <div
-              className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-ink/80 to-transparent"
-              aria-hidden="true"
-            />
-            <figcaption className="absolute bottom-0 left-0 right-0 px-4 pb-4 text-[10.5px] leading-relaxed text-canvas">
-              Misty Morning in Mysuru, by Pradyumnakp. CC0, Wikimedia Commons.
-            </figcaption>
-          </figure>
+        <div className="relative h-[38vh] min-h-[240px] max-h-[420px] overflow-hidden">
+          <Image
+            src="/images/story-fog-street.jpg"
+            alt="A foggy early morning street in Mysuru, framed by tree branches, with an auto-rickshaw disappearing into the mist."
+            fill
+            sizes="100vw"
+            className="parallax object-cover object-center"
+          />
         </div>
       </section>
 
-      <section aria-labelledby="ai-heading" className="border-t border-line">
-        <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12">
-          <div className="grid gap-12 lg:grid-cols-[1fr_0.85fr] lg:items-start lg:gap-20">
+      <section aria-labelledby="ai-heading" className="border-b border-line">
+        <div className="mx-auto max-w-[1440px] px-5 py-20 sm:px-8 sm:py-24 lg:px-12">
+          <h2
+            id="ai-heading"
+            className="max-w-[20ch] text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-[1.05] tracking-[-0.035em] text-ink"
+          >
+            Context first, then the answer.
+          </h2>
+          <p className="mt-5 max-w-xl text-[15px] leading-[1.7] text-ink-soft">
+            Ask a question and the server fetches the current reading for your selected place before
+            the model is called. The browser does not supply the numbers.
+          </p>
+
+          <div className="mt-12 grid gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-16">
             <div data-reveal>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-ink-muted">
-                Inside the assistant
+              <AiContextPanel />
+              <p className="mt-4 text-[11px] leading-relaxed text-ink-muted">
+                Live values for your selected city. They change when the reading changes, not when
+                the page copy does.
               </p>
-              <h2
-                id="ai-heading"
-                className="mt-5 max-w-[16ch] text-[clamp(2rem,4vw,3.4rem)] font-semibold leading-[1.04] tracking-[-0.035em] text-ink"
-              >
-                Context first, then the answer.
-              </h2>
-              <p className="mt-6 max-w-xl text-[16px] leading-[1.7] text-ink-soft">
-                Ask a question and the server fetches the current reading for your selected place
-                before the model is called. The browser does not supply the numbers.
-              </p>
-              <p className="mt-4 max-w-xl text-[16px] leading-[1.7] text-ink-soft">
+            </div>
+
+            <div className="lg:pt-2" data-reveal>
+              <p className="max-w-xl text-[15px] leading-[1.7] text-ink-soft">
                 That context includes both indices, the pollutant concentrations, the dominant
                 pollutant and the weather. The model is instructed to name what it does not know.
                 If Gemini is unavailable, the page says so instead of writing something plausible.
               </p>
+
+              <div className="mt-8 border-t border-line-strong pt-6">
+                <h3 className="text-sm font-semibold text-ink">What it will not do</h3>
+                <ul className="mt-4 space-y-3">
+                  {LIMITS.map((limit) => (
+                    <li
+                      key={limit}
+                      className="flex gap-3 text-sm leading-relaxed text-ink-soft"
+                    >
+                      <span
+                        className="mt-2 h-px w-4 shrink-0 bg-accent"
+                        aria-hidden="true"
+                      />
+                      {limit}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
               <Link
                 href="/assistant"
-                className="group mt-7 inline-flex items-center gap-2 text-sm font-semibold text-accent"
+                className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-accent"
               >
-                <span className="link-underline">Open the assistant</span>
+                <span className="link-underline">Meet AI Assistant</span>
                 <ArrowIcon className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
-            </div>
-
-            <div data-reveal>
-              <AiContextPanel />
-              <p className="mt-4 text-[11px] leading-relaxed text-ink-muted">
-                These are the live values for your selected city. They change when the reading
-                changes, not when the page copy does.
-              </p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="bg-accent text-canvas">
+      <section className="bg-accent text-white">
         <div className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8 sm:py-32 lg:px-12">
-          <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-end" data-reveal>
-            <div>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-sage">
-                AirAware AI
-              </p>
-              <h2 className="mt-6 max-w-[17ch] font-serif text-[clamp(2.5rem,5.4vw,4.6rem)] italic leading-[1.02] tracking-[-0.02em]">
-                Better awareness starts with a single breath.
-              </h2>
-            </div>
-            <div className="lg:pb-2">
-              <p className="max-w-sm text-[15px] leading-relaxed text-canvas/75">
-                Explore your local air quality and discover practical ways to navigate your
-                everyday environment.
-              </p>
+          <div data-reveal>
+            <h2 className="max-w-[18ch] pb-2 font-serif text-[clamp(2.5rem,5.2vw,4.6rem)] italic leading-[1.08] tracking-[-0.02em]">
+              Better awareness starts with a single breath.
+            </h2>
+            <div className="mt-10 flex flex-wrap items-center gap-x-6 gap-y-4">
               <Link
                 href="/dashboard"
-                className="lift mt-7 inline-flex items-center gap-2 bg-canvas px-5 py-3 text-sm font-semibold text-accent hover:bg-sage"
+                className="lift inline-flex items-center gap-2 rounded-full bg-white px-6 py-3.5 text-sm font-semibold text-ink hover:bg-accent-soft"
               >
-                Explore AirAware AI
+                Explore Dashboard
                 <ArrowIcon className="h-4 w-4" />
               </Link>
-              <p className="mt-4 text-[11px] text-canvas/65">
+              <p className="text-sm text-white/80">
                 No account. No installation. Just the reading.
               </p>
             </div>

@@ -17,7 +17,7 @@ test.describe("landing page", () => {
     await page.goto("/");
 
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "The air around you matters.",
+      "The air you breathe. The choices you make.",
     );
 
     const nav = page.getByRole("navigation", { name: "Main" }).first();
@@ -32,18 +32,15 @@ test.describe("landing page", () => {
     );
     await expect(nav.getByRole("link", { name: "About" })).toHaveAttribute("href", "/#about");
 
-    await expect(page.getByRole("link", { name: "Open Dashboard" }).first()).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Explore Dashboard" }).first()).toHaveAttribute(
       "href",
       "/dashboard",
     );
-    await expect(
-      page.getByRole("link", { name: "Explore AI Assistant" }).first(),
-    ).toHaveAttribute("href", "/assistant");
     await expect(page.getByRole("link", { name: "Explore Air Quality" })).toHaveAttribute(
       "href",
       "#live-air",
     );
-    await expect(page.getByRole("link", { name: "Meet Your AI Assistant" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Meet AI Assistant" }).first()).toHaveAttribute(
       "href",
       "/assistant",
     );
@@ -90,19 +87,19 @@ test.describe("landing page", () => {
       await expect(page.locator(`#${id}`)).toHaveCount(1);
     }
 
-    await expect(page.getByRole("link", { name: "Open the dashboard" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Explore Dashboard" }).last()).toHaveAttribute(
       "href",
       "/dashboard",
     );
-    await expect(page.getByRole("link", { name: "Meet the assistant" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Meet AI Assistant" }).last()).toHaveAttribute(
       "href",
       "/assistant",
     );
-    await expect(page.getByRole("link", { name: "Open the daily plan" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Build today's plan" })).toHaveAttribute(
       "href",
       "/plan",
     );
-    await expect(page.getByRole("link", { name: "Open indoor air" })).toHaveAttribute(
+    await expect(page.getByRole("link", { name: "Open indoor guidance" })).toHaveAttribute(
       "href",
       "/indoor",
     );
@@ -122,7 +119,7 @@ test.describe("landing page", () => {
   test("the primary call to action reaches the dashboard", async ({ page }) => {
     await mockAir(page);
     await page.goto("/");
-    await page.getByRole("link", { name: "Open Dashboard" }).first().click();
+    await page.getByRole("link", { name: "Explore Dashboard" }).first().click();
     await expect(page).toHaveURL(/\/dashboard$/);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("New Delhi");
   });
@@ -145,6 +142,7 @@ test.describe("landing page", () => {
   for (const viewport of [
     { name: "wide desktop", width: 1440, height: 900 },
     { name: "laptop", width: 1280, height: 800 },
+    { name: "small laptop", width: 1024, height: 768 },
     { name: "tablet", width: 768, height: 1024 },
     { name: "phone", width: 390, height: 844 },
     { name: "small phone", width: 360, height: 780 },

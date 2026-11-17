@@ -23,7 +23,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AirAware AI | The air around you matters",
+    default: "AirAware AI | The air you breathe. The choices you make.",
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: "AirAware AI | The air around you matters",
+    title: "AirAware AI | The air you breathe. The choices you make.",
     description: SITE_DESCRIPTION,
     images: [
       {
@@ -55,7 +55,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "AirAware AI | The air around you matters",
+    title: "AirAware AI | The air you breathe. The choices you make.",
     description: SITE_DESCRIPTION,
     images: ["/images/hero-city-haze.jpg"],
   },
@@ -63,7 +63,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#f7f7f2",
+  themeColor: "#f5f3ee",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

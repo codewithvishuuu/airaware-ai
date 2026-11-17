@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { GITHUB_URL } from "@/lib/site";
 import { Wordmark } from "./wordmark";
+import { ArrowIcon } from "./icons";
 
 const PRODUCT_LINKS = [
   { href: "/dashboard", label: "Dashboard" },
@@ -33,7 +34,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
     <li>
       <Link
         href={href}
-        className="link-underline inline-block text-[13.5px] text-ink-soft transition hover:text-ink"
+        className="link-underline inline-block text-[13.5px] text-ink-soft transition-colors hover:text-ink"
       >
         {label}
       </Link>
@@ -44,7 +45,7 @@ function FooterLink({ href, label }: { href: string; label: string }) {
 function Column({ title, links }: { title: string; links: { href: string; label: string }[] }) {
   return (
     <nav aria-label={title}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+      <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted">
         {title}
       </p>
       <ul className="mt-4 space-y-2.5">
@@ -85,14 +86,14 @@ export function SiteFooter() {
   }
 
   return (
-    <footer className="border-t border-line bg-canvas">
+    <footer className="border-t border-line">
       <div className="mx-auto max-w-[1440px] px-5 pb-10 pt-16 sm:px-8 sm:pt-20 lg:px-12">
-        <div className="grid gap-12 lg:grid-cols-[1.5fr_0.8fr_0.8fr_1fr]">
+        <div className="grid gap-12 lg:grid-cols-[1.6fr_0.7fr_0.7fr_1fr]">
           <div>
             <Wordmark href="/" />
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-ink-soft">
               Environmental intelligence for everyday decisions. Live readings, honest labels and
-              guidance you can actually act on.
+              guidance you can act on.
             </p>
             <a
               href={GITHUB_URL}
@@ -112,7 +113,7 @@ export function SiteFooter() {
 
           <div>
             <nav aria-label="Data sources">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-ink-muted">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-ink-muted">
                 Data
               </p>
               <ul className="mt-4 space-y-2.5">
@@ -122,7 +123,7 @@ export function SiteFooter() {
                       href={source.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="link-underline inline-block text-[13.5px] text-ink-soft transition hover:text-ink"
+                      className="link-underline inline-block text-[13.5px] text-ink-soft transition-colors hover:text-ink"
                     >
                       {source.label}
                     </a>
@@ -185,14 +186,19 @@ export function SiteFooter() {
             by Pradyumnakp, CC0. Images cropped and resized; shared under the same licences.
           </p>
 
-          <div className="mt-8 flex flex-wrap items-center justify-between gap-3 text-xs text-ink-muted">
+          <div className="mt-8 flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 text-xs text-ink-muted">
             <p>© {new Date().getFullYear()} AirAware AI. All rights reserved.</p>
             <p>
-              Built with Next.js, Open-Meteo and Gemini. Source at{" "}
-              <a href={GITHUB_URL} target="_blank" rel="noreferrer" className="link-underline">
-                codewithvishuuu/airaware-ai
+              Built with Next.js, Open-Meteo and Gemini. Source on{" "}
+              <a
+                href={GITHUB_URL}
+                target="_blank"
+                rel="noreferrer"
+                className="link-underline inline-flex items-center gap-1 text-ink"
+              >
+                GitHub
+                <ArrowIcon className="h-3 w-3" />
               </a>
-              .
             </p>
           </div>
         </div>

@@ -38,7 +38,7 @@ function AppNavLink({
       aria-current={active ? "page" : undefined}
       className={`whitespace-nowrap rounded-full px-3 py-1.5 text-sm transition ${
         active
-          ? "bg-accent text-canvas"
+          ? "bg-accent text-white"
           : "text-ink-soft hover:bg-accent-soft hover:text-ink"
       }`}
     >
@@ -62,35 +62,32 @@ export function SiteHeader() {
 
   if (pathname === "/") {
     return (
-      <header className="sticky top-0 z-40 border-b border-line bg-canvas/90 backdrop-blur-sm">
-        <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
+      <header
+        data-nav="marketing"
+        className="sticky top-0 z-40 border-b backdrop-blur-md"
+      >
+        <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between gap-6 px-5 sm:px-8 lg:px-12">
           <Wordmark href="/" />
 
-          <nav className="hidden items-center gap-8 lg:flex" aria-label="Main">
+          <nav className="hidden items-center gap-9 lg:flex" aria-label="Main">
             {MARKET_LINKS.map((link) => (
               <Link
                 key={link.label}
                 href={link.href}
                 aria-current={link.href === "/" ? "page" : undefined}
-                className="link-underline text-[13.5px] font-medium text-ink-soft transition hover:text-ink aria-[current=page]:text-ink"
+                className="link-underline text-[13px] font-medium tracking-[-0.005em] text-ink-soft transition-colors hover:text-ink aria-[current=page]:text-ink"
               >
                 {link.label}
               </Link>
             ))}
           </nav>
 
-          <div className="hidden items-center gap-6 lg:flex">
-            <Link
-              href="/assistant"
-              className="link-underline text-[13.5px] font-medium text-ink-soft transition hover:text-ink"
-            >
-              Explore AI Assistant
-            </Link>
+          <div className="hidden items-center gap-3 lg:flex">
             <Link
               href="/dashboard"
-              className="lift inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-[13px] font-semibold text-canvas hover:bg-ink"
+              className="lift inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2.5 text-[13px] font-semibold text-white hover:bg-ink"
             >
-              Open Dashboard
+              Explore Dashboard
               <ArrowIcon className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -98,9 +95,9 @@ export function SiteHeader() {
           <div className="flex items-center gap-2 lg:hidden">
             <Link
               href="/dashboard"
-              className="inline-flex items-center gap-1.5 rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-canvas"
+              className="hidden items-center rounded-full bg-accent px-3.5 py-2 text-xs font-semibold text-white sm:inline-flex"
             >
-              Dashboard
+              Explore Dashboard
             </Link>
             <button
               type="button"
@@ -122,7 +119,7 @@ export function SiteHeader() {
                   strokeLinecap="round"
                   aria-hidden="true"
                 >
-                  <path d="M4 8h16M4 16h11" />
+                  <path d="M4 9h16M4 15h11" />
                 </svg>
               )}
             </button>
@@ -130,15 +127,18 @@ export function SiteHeader() {
         </div>
 
         {open ? (
-          <div id="site-menu" className="rise border-t border-line bg-canvas lg:hidden">
-            <nav className="mx-auto max-w-[1440px] px-5 py-4 sm:px-8" aria-label="Mobile">
+          <div
+            id="site-menu"
+            className="menu-in border-y border-line bg-canvas lg:hidden"
+          >
+            <nav className="mx-auto max-w-[1440px] px-5 pb-6 pt-2 sm:px-8" aria-label="Mobile">
               <ul>
-                {MARKET_LINKS.map((link) => (
-                  <li key={link.label}>
+                {MARKET_LINKS.map((link, index) => (
+                  <li key={link.label} style={{ "--i": index } as React.CSSProperties}>
                     <Link
                       href={link.href}
                       onClick={() => setOpen(false)}
-                      className="flex items-center justify-between border-b border-line py-3 text-[15px] font-medium text-ink"
+                      className="flex items-center justify-between border-b border-line py-4 text-[17px] font-medium tracking-[-0.01em] text-ink"
                     >
                       {link.label}
                       <ArrowIcon className="h-4 w-4 text-ink-muted" />
@@ -146,20 +146,16 @@ export function SiteHeader() {
                   </li>
                 ))}
               </ul>
-              <div className="flex flex-col gap-2 pt-4">
+              <div
+                className="pt-6"
+                style={{ "--i": MARKET_LINKS.length } as React.CSSProperties}
+              >
                 <Link
                   href="/dashboard"
                   onClick={() => setOpen(false)}
-                  className="inline-flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3 text-sm font-semibold text-canvas"
+                  className="flex items-center justify-center gap-2 rounded-full bg-accent px-4 py-3.5 text-sm font-semibold text-white"
                 >
-                  Open Dashboard
-                </Link>
-                <Link
-                  href="/assistant"
-                  onClick={() => setOpen(false)}
-                  className="inline-flex items-center justify-center rounded-full border border-line-strong px-4 py-3 text-sm font-medium text-ink"
-                >
-                  Explore AI Assistant
+                  Explore Dashboard
                 </Link>
               </div>
             </nav>
