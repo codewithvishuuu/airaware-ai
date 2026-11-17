@@ -24,7 +24,7 @@ async function mockAi(page: Page, status: number, code: string, message: string)
 
 test.describe("live data", () => {
   test("dashboard renders real readings from Open-Meteo", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     await expect(page.getByRole("heading", { level: 1 })).toHaveText("New Delhi");
     await expect(page.getByTestId("aqi-value")).toBeVisible({ timeout: 30_000 });
@@ -60,7 +60,7 @@ test.describe("live data", () => {
       }),
     );
 
-    await page.goto("/");
+    await page.goto("/dashboard");
     await page.getByRole("button", { name: /New Delhi/ }).click();
     await page.getByLabel("Search for a city").fill("mumbai");
     await expect(page.getByRole("button", { name: /Mumbai/ })).toBeVisible();
@@ -79,7 +79,7 @@ test.describe("failure states", () => {
       }),
     );
 
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.getByText(/Could not load readings/)).toBeVisible();
     await expect(page.getByRole("button", { name: "Try again" })).toBeVisible();
   });
@@ -88,7 +88,7 @@ test.describe("failure states", () => {
     await mockAir(page);
     await mockAi(page, 503, "missing_key", "GEMINI_API_KEY is not configured.");
 
-    await page.goto("/");
+    await page.goto("/dashboard");
     await page.getByRole("button", { name: "Generate briefing" }).click();
 
     await expect(page.getByText("Live AI is not configured")).toBeVisible();
@@ -99,7 +99,7 @@ test.describe("failure states", () => {
     await mockAir(page);
     await mockAi(page, 503, "busy", "The AI model is busy right now.");
 
-    await page.goto("/");
+    await page.goto("/dashboard");
     await page.getByRole("button", { name: "Generate briefing" }).click();
 
     await expect(page.getByText("Gemini is busy")).toBeVisible();
@@ -121,7 +121,7 @@ test.describe("failure states", () => {
 test.describe("data honesty", () => {
   test("switching to CPCB shows the computed value and its caveat", async ({ page }) => {
     await mockAir(page);
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     await expect(page.getByTestId("aqi-value")).toHaveText("172");
     await page.getByRole("button", { name: "CPCB AQI" }).click();
@@ -131,7 +131,7 @@ test.describe("data honesty", () => {
 
   test("stale readings are flagged", async ({ page }) => {
     await mockAir(page, { stale: true });
-    await page.goto("/");
+    await page.goto("/dashboard");
     await expect(page.getByText(/more than three hours old/i)).toBeVisible();
   });
 });
@@ -145,7 +145,7 @@ test.describe("responsive layout", () => {
     test(`no horizontal overflow on ${viewport.name}`, async ({ page }) => {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       await mockAir(page);
-      await page.goto("/");
+      await page.goto("/dashboard");
       await expect(page.getByTestId("aqi-value")).toBeVisible();
 
       const overflow = await page.evaluate(() => ({
@@ -159,7 +159,7 @@ test.describe("responsive layout", () => {
   test("navigation stays reachable on a phone", async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await mockAir(page);
-    await page.goto("/");
+    await page.goto("/dashboard");
 
     const nav = page.getByRole("navigation", { name: "Main" }).last();
     await expect(nav).toBeVisible();
@@ -170,7 +170,15 @@ test.describe("responsive layout", () => {
 });
 
 test.describe("accessibility", () => {
-  for (const path of ["/", "/assistant", "/plan", "/indoor", "/impact", "/insights"]) {
+  for (const path of [
+    "/",
+    "/dashboard",
+    "/assistant",
+    "/plan",
+    "/indoor",
+    "/impact",
+    "/insights",
+  ]) {
     test(`${path} has no serious accessibility violations`, async ({ page }) => {
       await mockAir(page);
       await page.goto(path);

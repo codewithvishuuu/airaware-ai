@@ -159,7 +159,7 @@ export function AqiHero({
   );
 }
 
-function ScaleStrip({ value }: { value: number | null }) {
+export function ScaleStrip({ value }: { value: number | null }) {
   const segments = [
     { width: 10, color: "#15803d" },
     { width: 10, color: "#b45309" },
