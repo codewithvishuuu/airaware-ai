@@ -4,7 +4,7 @@
 
 An air-quality assistant built for Indian cities, where the gap between an index number and a decision — *do I run now, do I open the windows, is the metro actually better* — is the whole problem.
 
-Live demo: _deployment URL added after production deploy._
+Live demo: **https://airaware-ai-nine.vercel.app**
 
 ---
 
