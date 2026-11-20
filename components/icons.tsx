@@ -102,6 +102,20 @@ export const ShieldIcon = ({ className }: IconProps) =>
     className,
   );
 
+export const UsersIcon = ({ className }: IconProps) =>
+  svg(
+    <>
+      <path d="M16 19v-1.5a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4V19" />
+      <circle cx="9" cy="7.5" r="3.5" />
+      <path d="M22 19v-1.5a4 4 0 0 0-3-3.87" />
+      <path d="M16 4.13a4 4 0 0 1 0 7.75" />
+    </>,
+    className,
+  );
+
+export const CheckIcon = ({ className }: IconProps) =>
+  svg(<path d="m5 12.5 4.5 4.5L19 7" />, className);
+
 export const AlertIcon = ({ className }: IconProps) =>
   svg(
     <>

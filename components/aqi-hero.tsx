@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { AirData } from "@/lib/types";
 import { BandPill } from "./pollutant-grid";
 import { Card } from "./ui";
-import { RefreshIcon, ShieldIcon } from "./icons";
+import { HealthGuidance } from "./health-guidance";
+import { RefreshIcon } from "./icons";
 
 type Standard = "us" | "cpcb";
 
@@ -128,33 +129,7 @@ export function AqiHero({
         </div>
       </Card>
 
-      <div
-        className="rise flex flex-col justify-between rounded-2xl border p-5 sm:p-6"
-        style={{
-          backgroundColor: band?.soft ?? "#fafaf9",
-          borderColor: band?.border ?? "#e7e5e4",
-        }}
-      >
-        <div>
-          <div className="flex items-center gap-2">
-            <ShieldIcon className="h-4 w-4" />
-            <p className="text-sm font-semibold" style={{ color: band?.color ?? "#1c1917" }}>
-              Health and activity guidance
-            </p>
-          </div>
-          <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-            {band?.guidance ?? "No guidance available for this reading."}
-          </p>
-        </div>
-        <div className="pt-5" style={{ borderColor: band?.border }}>
-          <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-ink-soft">
-            What to do today
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-ink">
-            {band?.activity ?? "Try again when a reading is available."}
-          </p>
-        </div>
-      </div>
+      <HealthGuidance band={band} value={value} />
     </div>
   );
 }

@@ -1,6 +1,10 @@
 import { expect, test, type Page } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { usBand } from "../lib/aqi";
 import { airFixture } from "./fixture";
+
+const panel = (page: Page) =>
+  page.getByRole("region", { name: "Health and activity guidance" });
 
 async function mockAir(page: Page, overrides = {}) {
   await page.route("**/api/air*", (route) =>
@@ -133,6 +137,126 @@ test.describe("data honesty", () => {
     await mockAir(page, { stale: true });
     await page.goto("/dashboard");
     await expect(page.getByText(/more than three hours old/i)).toBeVisible();
+  });
+});
+
+test.describe("health guidance", () => {
+  test("shows the current US category with sensitive-group and action copy", async ({ page }) => {
+    await mockAir(page);
+    await page.goto("/dashboard");
+
+    const guidance = panel(page);
+    await expect(guidance).toContainText("Everyone may begin to experience health effects.");
+    await expect(guidance.getByText("Unhealthy", { exact: true })).toBeVisible();
+    await expect(guidance).toContainText("Reduce prolonged or heavy outdoor exertion for everyone.");
+    await expect(guidance).toContainText("Sensitive groups should move workouts indoors.");
+    await expect(guidance).toContainText("Keep windows closed and use a purifier if you have one.");
+    await expect(guidance).toContainText("indoor air is not measured here");
+  });
+
+  test("switching to CPCB swaps the badge and the advice", async ({ page }) => {
+    await mockAir(page);
+    await page.goto("/dashboard");
+    const guidance = panel(page);
+    await expect(guidance.getByText("Unhealthy", { exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: "CPCB AQI" }).click();
+
+    await expect(guidance.getByText("Poor", { exact: true })).toBeVisible();
+    await expect(guidance).toContainText("Breathing discomfort on prolonged exposure.");
+    await expect(guidance).toContainText("Avoid outdoor exercise.");
+    await expect(guidance).toContainText("Keep windows closed and run a purifier in the room you use most.");
+    await expect(guidance).not.toContainText("Everyone may begin to experience health effects.");
+  });
+
+  test("Good readings get Good advice, not a hardcoded category", async ({ page }) => {
+    await mockAir(page, { usAqi: 32, usBand: usBand(32) });
+    await page.goto("/dashboard");
+
+    const guidance = panel(page);
+    await expect(guidance.getByText("Good", { exact: true })).toBeVisible();
+    await expect(guidance).toContainText("Air quality is satisfactory and poses little risk to health.");
+    await expect(guidance).toContainText("Normal outdoor activity is fine for everyone.");
+    await expect(guidance).toContainText("A good day to open windows for ventilation.");
+    await expect(guidance).not.toContainText("Favour early-morning outdoor time");
+  });
+
+  test("says so when no category is available instead of showing advice", async ({ page }) => {
+    await mockAir(page, { usAqi: null, usBand: null, cpcb: null });
+    await page.goto("/dashboard");
+
+    const guidance = panel(page);
+    await expect(guidance.getByText("Not available")).toBeVisible();
+    await expect(guidance).toContainText("Guidance appears once this location has a current AQI");
+    await expect(guidance).not.toContainText("What to do today");
+
+    await page.getByRole("button", { name: "CPCB AQI" }).click();
+    await expect(guidance).toContainText("Guidance appears once this location has a current AQI");
+  });
+
+  test("updates when fresh readings arrive", async ({ page }) => {
+    let calls = 0;
+    await page.route("**/api/air*", (route) => {
+      calls += 1;
+      return route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(calls === 1 ? airFixture() : airFixture({ usAqi: 32, usBand: usBand(32) })),
+      });
+    });
+
+    await page.goto("/dashboard");
+    const guidance = panel(page);
+    await expect(guidance.getByText("Unhealthy", { exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: "Refresh" }).click();
+    await expect(guidance.getByText("Good", { exact: true })).toBeVisible();
+    await expect(guidance).toContainText("A good day to open windows for ventilation.");
+  });
+
+  test("updates when the city changes", async ({ page }) => {
+    await page.route("**/api/air*", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify(
+          route.request().url().includes("19.07")
+            ? airFixture({ usAqi: 32, usBand: usBand(32) })
+            : airFixture(),
+        ),
+      }),
+    );
+    await page.route("**/api/cities*", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          results: [
+            {
+              id: "19.07,72.87",
+              name: "Mumbai",
+              admin: "Maharashtra",
+              country: "India",
+              countryCode: "IN",
+              latitude: 19.07,
+              longitude: 72.87,
+            },
+          ],
+        }),
+      }),
+    );
+
+    await page.goto("/dashboard");
+    const guidance = panel(page);
+    await expect(guidance.getByText("Unhealthy", { exact: true })).toBeVisible();
+
+    await page.getByRole("button", { name: /New Delhi/ }).click();
+    await page.getByLabel("Search for a city").fill("mumbai");
+    await page.getByRole("button", { name: /Mumbai/ }).click();
+
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("Mumbai");
+    await expect(guidance.getByText("Good", { exact: true })).toBeVisible();
+    await expect(guidance).toContainText("Normal outdoor activity is fine for everyone.");
   });
 });
 
