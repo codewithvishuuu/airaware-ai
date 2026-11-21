@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { POLLUTANT_KEYS, POLLUTANT_META } from "./aqi";
+import { mean, pmSeries } from "./history";
 import type { AirData, RecommendationSet } from "./types";
 
 const ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models";
@@ -261,10 +262,12 @@ export function buildContext(air: AirData): string {
     lines.push("Weather: unavailable.");
   }
 
-  const recent = air.history.pm25.filter((v): v is number => v != null).slice(-24);
-  if (recent.length >= 6) {
-    const avg = recent.reduce((sum, v) => sum + v, 0) / recent.length;
-    lines.push(`PM2.5 average over the last ${recent.length} hours: ${avg.toFixed(1)} µg/m³.`);
+  const recent = pmSeries(air.history).slice(-24);
+  const recentAvg = mean(recent);
+  if (recent.length >= 6 && recentAvg != null) {
+    lines.push(
+      `PM2.5 average over the last ${recent.length} hours: ${recentAvg.toFixed(1)} µg/m³.`,
+    );
   }
 
   if (air.stale) lines.push("Note: the reading is older than three hours and may be stale.");

@@ -1,18 +1,20 @@
 import type { NextRequest } from "next/server";
+import { apiError, numberParam } from "@/lib/http";
 import { getAirData, isValidCoordinate, UpstreamError } from "@/lib/air";
 
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
   const params = new URL(request.url).searchParams;
-  const lat = Number(params.get("lat"));
-  const lon = Number(params.get("lon"));
+  const lat = numberParam(params, "lat");
+  const lon = numberParam(params, "lon");
   const name = (params.get("name") ?? "Selected location").slice(0, 80);
 
-  if (!isValidCoordinate(lat, lon)) {
-    return Response.json(
-      { error: { code: "invalid_location", message: "Latitude and longitude are required and must be valid." } },
-      { status: 400 },
+  if (lat == null || lon == null || !isValidCoordinate(lat, lon)) {
+    return apiError(
+      400,
+      "invalid_location",
+      "Latitude and longitude are required and must be valid.",
     );
   }
 
@@ -35,14 +37,8 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     if (error instanceof UpstreamError) {
-      return Response.json(
-        { error: { code: "upstream", message: error.message } },
-        { status: error.status },
-      );
+      return apiError(error.status, "upstream", error.message);
     }
-    return Response.json(
-      { error: { code: "unknown", message: "Could not load air quality data." } },
-      { status: 500 },
-    );
+    return apiError(500, "unknown", "Could not load air quality data.");
   }
 }

@@ -1,7 +1,6 @@
 "use client";
 
-import type { AirData } from "@/lib/types";
-import type { Band } from "@/lib/types";
+import type { AirData, Band } from "@/lib/types";
 import { POLLUTANT_KEYS, POLLUTANT_META, pollutantScale } from "@/lib/aqi";
 import { SectionHeading, Skeleton } from "./ui";
 import { AlertIcon } from "./icons";

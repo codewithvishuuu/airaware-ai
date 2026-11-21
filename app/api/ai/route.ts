@@ -3,12 +3,14 @@ import { z } from "zod";
 import { getAirData, isValidCoordinate, UpstreamError } from "@/lib/air";
 import {
   AiError,
+  type AiErrorCode,
   aiConfigured,
   activeModel,
   chatReply,
   dailyPlan,
   indoorGuidance,
 } from "@/lib/ai";
+import { apiError } from "@/lib/http";
 import { rateLimit } from "@/lib/rate-limit";
 
 export const dynamic = "force-dynamic";
@@ -23,12 +25,16 @@ const placeSchema = z.object({
   countryCode: z.string().max(4).optional(),
 });
 
+/** Every mode is grounded in the same coordinates and place, so they are defined once. */
+const groundingSchema = z.object({
+  lat: z.number().min(-90).max(90),
+  lon: z.number().min(-180).max(180),
+  place: placeSchema,
+});
+
 const bodySchema = z.discriminatedUnion("mode", [
-  z.object({
+  groundingSchema.extend({
     mode: z.literal("chat"),
-    lat: z.number().min(-90).max(90),
-    lon: z.number().min(-180).max(180),
-    place: placeSchema,
     message: z.string().min(2).max(800),
     history: z
       .array(
@@ -40,11 +46,8 @@ const bodySchema = z.discriminatedUnion("mode", [
       .max(10)
       .default([]),
   }),
-  z.object({
+  groundingSchema.extend({
     mode: z.literal("plan"),
-    lat: z.number().min(-90).max(90),
-    lon: z.number().min(-180).max(180),
-    place: placeSchema,
     profile: z.object({
       routine: z.string().max(200).default("Standard weekday"),
       outdoorActivity: z.string().max(200).default("Walks and errands"),
@@ -53,28 +56,25 @@ const bodySchema = z.discriminatedUnion("mode", [
       concerns: z.string().max(200).default("General health"),
     }),
   }),
-  z.object({
+  groundingSchema.extend({
     mode: z.literal("indoor"),
-    lat: z.number().min(-90).max(90),
-    lon: z.number().min(-180).max(180),
-    place: placeSchema,
     household: z.string().max(300).default("Typical urban apartment"),
   }),
 ]);
 
-function fail(status: number, code: string, message: string, retryAfter?: number) {
-  return Response.json(
-    { error: { code, message } },
-    {
-      status,
-      headers: retryAfter ? { "Retry-After": String(retryAfter) } : undefined,
-    },
-  );
-}
+const STATUS_BY_CODE: Record<AiErrorCode, number> = {
+  missing_key: 503,
+  busy: 503,
+  model_unavailable: 503,
+  timeout: 504,
+  bad_output: 502,
+  invalid_request: 502,
+  upstream: 502,
+};
 
 export async function POST(request: NextRequest) {
   if (!aiConfigured()) {
-    return fail(
+    return apiError(
       503,
       "missing_key",
       "The AI assistant is not configured on this server. Add GEMINI_API_KEY and redeploy.",
@@ -87,11 +87,11 @@ export async function POST(request: NextRequest) {
     "local";
   const limit = rateLimit(ip);
   if (!limit.ok) {
-    return fail(
+    return apiError(
       429,
       "rate_limited",
       "That is a lot of questions at once. Wait a minute and try again.",
-      limit.retryAfter,
+      { "Retry-After": String(limit.retryAfter) },
     );
   }
 
@@ -99,17 +99,17 @@ export async function POST(request: NextRequest) {
   try {
     payload = await request.json();
   } catch {
-    return fail(400, "invalid_body", "Request body must be JSON.");
+    return apiError(400, "invalid_body", "Request body must be JSON.");
   }
 
   const parsed = bodySchema.safeParse(payload);
   if (!parsed.success) {
-    return fail(400, "invalid_body", parsed.error.issues[0]?.message ?? "Invalid request.");
+    return apiError(400, "invalid_body", parsed.error.issues[0]?.message ?? "Invalid request.");
   }
 
   const input = parsed.data;
   if (!isValidCoordinate(input.lat, input.lon)) {
-    return fail(400, "invalid_location", "Coordinates are outside the valid range.");
+    return apiError(400, "invalid_location", "Coordinates are outside the valid range.");
   }
 
   try {
@@ -137,17 +137,15 @@ export async function POST(request: NextRequest) {
     return Response.json({ mode: "indoor", data, model: activeModel(), configured: true });
   } catch (error) {
     if (error instanceof AiError) {
-      const status =
-        error.code === "missing_key" || error.code === "busy" || error.code === "model_unavailable"
-          ? 503
-          : error.code === "timeout"
-            ? 504
-            : 502;
-      return fail(status, error.code, error.message);
+      return apiError(STATUS_BY_CODE[error.code], error.code, error.message);
     }
     if (error instanceof UpstreamError) {
-      return fail(502, "upstream", "Air quality data is unavailable, so the assistant cannot ground an answer.");
+      return apiError(
+        502,
+        "upstream",
+        "Air quality data is unavailable, so the assistant cannot ground an answer.",
+      );
     }
-    return fail(500, "unknown", "The assistant failed unexpectedly.");
+    return apiError(500, "unknown", "The assistant failed unexpectedly.");
   }
 }

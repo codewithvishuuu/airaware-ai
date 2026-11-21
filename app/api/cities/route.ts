@@ -1,5 +1,6 @@
 import type { NextRequest } from "next/server";
 import { searchCities, UpstreamError } from "@/lib/air";
+import { apiError } from "@/lib/http";
 
 export const dynamic = "force-dynamic";
 
@@ -18,9 +19,6 @@ export async function GET(request: NextRequest) {
     );
   } catch (error) {
     const status = error instanceof UpstreamError ? error.status : 502;
-    return Response.json(
-      { error: { code: "upstream", message: "City search is unavailable right now." } },
-      { status },
-    );
+    return apiError(status, "upstream", "City search is unavailable right now.");
   }
 }

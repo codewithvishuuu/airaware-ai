@@ -1,6 +1,5 @@
 import { EmptyState } from "./ui";
-
-type History = { time: string[]; pm25: (number | null)[] };
+import type { History } from "@/lib/types";
 
 export function TrendChart({ history }: { history: History }) {
   const points = history.pm25

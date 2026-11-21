@@ -26,6 +26,16 @@ async function mockAi(page: Page, status: number, code: string, message: string)
   );
 }
 
+test.describe("API contracts", () => {
+  test("/api/air rejects missing and non-numeric coordinates", async ({ request }) => {
+    for (const query of ["", "?lat=0&lon=0abc", "?lat=NaN&lon=77"]) {
+      const response = await request.get(`/api/air${query}`);
+      expect(response.status()).toBe(400);
+      expect((await response.json()).error.code).toBe("invalid_location");
+    }
+  });
+});
+
 test.describe("live data", () => {
   test("dashboard renders real readings from Open-Meteo", async ({ page }) => {
     await page.goto("/dashboard");

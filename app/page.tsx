@@ -5,32 +5,25 @@ import { AiContextPanel, HeroReading, LiveAirSection } from "@/components/landin
 import { FeatureShowcase } from "@/components/landing/feature-showcase";
 import { RevealObserver } from "@/components/landing/reveal-observer";
 import { ArrowIcon, SparkIcon } from "@/components/icons";
-import { SITE_DESCRIPTION, SITE_NAME } from "@/lib/site";
+import { SHARE_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/site";
 
 export const metadata: Metadata = {
-  title: { absolute: "AirAware AI | The air you breathe. The choices you make." },
+  title: { absolute: SITE_TITLE },
   description: SITE_DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     url: "/",
     siteName: SITE_NAME,
-    title: "AirAware AI | The air you breathe. The choices you make.",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: "/images/hero-city-haze.jpg",
-        width: 1800,
-        height: 1051,
-        alt: "A city skyline dissolving into morning haze above a canopy of trees.",
-      },
-    ],
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AirAware AI | The air you breathe. The choices you make.",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/images/hero-city-haze.jpg"],
+    images: [SHARE_IMAGE.url],
   },
 };
 

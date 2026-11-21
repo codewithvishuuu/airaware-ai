@@ -4,22 +4,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { useLocation } from "@/lib/location";
 import { POLLUTANT_META } from "@/lib/aqi";
+import { formatObservedAt } from "@/lib/format";
+import type { AqiStandard } from "@/lib/types";
 import { LocationButton } from "@/components/location-button";
 import { BandPill } from "@/components/pollutant-grid";
 import { ScaleStrip } from "@/components/aqi-hero";
 import { AlertIcon, ArrowIcon, RefreshIcon } from "@/components/icons";
 
-type Standard = "us" | "cpcb";
-
 function observedLabel(iso: string) {
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return "time unavailable";
-  return date.toLocaleString(undefined, {
-    day: "numeric",
-    month: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  return formatObservedAt(iso) ?? "time unavailable";
 }
 
 function ageLabel(iso: string) {
@@ -113,7 +106,7 @@ export function HeroReading({ className = "" }: { className?: string }) {
 
 export function LiveAirSection() {
   const { air, place, loading, error, refresh } = useLocation();
-  const [standard, setStandard] = useState<Standard>("us");
+  const [standard, setStandard] = useState<AqiStandard>("us");
 
   const value = standard === "us" ? (air?.usAqi ?? null) : (air?.cpcb?.aqi ?? null);
   const band = standard === "us" ? (air?.usBand ?? null) : (air?.cpcb?.band ?? null);

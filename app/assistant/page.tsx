@@ -3,14 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "@/lib/location";
 import { useAiRequest } from "@/lib/use-ai";
+import { groundedRequest } from "@/lib/ai-client";
 import { AiErrorPanel, AiThinking } from "@/components/ai-status";
 import { AiText } from "@/components/recommendation-list";
-import { BandPill } from "@/components/pollutant-grid";
+import { ReadingChips } from "@/components/reading-chips";
 import { Card, EmptyState, buttonPrimary, fieldClass } from "@/components/ui";
 import { ArrowIcon, SparkIcon } from "@/components/icons";
+import type { AiTextResponse } from "@/lib/types";
 
 type Turn = { role: "user" | "assistant"; content: string };
-type ChatPayload = { mode: "chat"; text: string; model: string };
 
 const SUGGESTIONS = [
   "Is it safe to run outside at 7pm?",
@@ -24,7 +25,7 @@ export default function AssistantPage() {
   const { air, place } = useLocation();
   const [turns, setTurns] = useState<Turn[]>([]);
   const [draft, setDraft] = useState("");
-  const chat = useAiRequest<ChatPayload>();
+  const chat = useAiRequest<AiTextResponse>();
   const threadRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -41,14 +42,7 @@ export default function AssistantPage() {
 
     const payload = await chat.run({
       mode: "chat",
-      lat: air.place.latitude,
-      lon: air.place.longitude,
-      place: {
-        name: air.place.name,
-        admin: air.place.admin,
-        country: air.place.country,
-        countryCode: air.place.countryCode,
-      },
+      ...groundedRequest(air),
       message: text,
       history,
     });
@@ -73,14 +67,7 @@ export default function AssistantPage() {
       </div>
 
       {air ? (
-        <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
-          <span className="rounded-full border border-line bg-surface px-2.5 py-1">{place.name}</span>
-          {air.usAqi != null && air.usBand ? (
-            <span className="rounded-full border border-line bg-surface px-2.5 py-1">
-              US AQI {Math.round(air.usAqi)}
-            </span>
-          ) : null}
-          {air.usBand ? <BandPill band={air.usBand} /> : null}
+        <ReadingChips air={air} place={place} className="mb-4">
           {air.cpcb ? (
             <span className="rounded-full border border-line bg-surface px-2.5 py-1">
               CPCB {air.cpcb.aqi}
@@ -89,7 +76,7 @@ export default function AssistantPage() {
           <span className="text-ink-muted">
             updated {new Date(air.observedAt).toLocaleString()}
           </span>
-        </div>
+        </ReadingChips>
       ) : (
         <EmptyState
           title="Waiting for readings"

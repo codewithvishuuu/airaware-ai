@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useLocation } from "@/lib/location";
 import { useAiRequest } from "@/lib/use-ai";
+import { groundedRequest } from "@/lib/ai-client";
+import type { AiTextResponse } from "@/lib/types";
 import { AqiHero } from "@/components/aqi-hero";
 import { PollutantGrid, PollutantGridSkeleton, StaleNotice } from "@/components/pollutant-grid";
 import { TrendChart } from "@/components/trend-chart";
@@ -11,8 +13,6 @@ import { AiErrorPanel, AiThinking } from "@/components/ai-status";
 import { AiText } from "@/components/recommendation-list";
 import { Card, SectionHeading, Skeleton, buttonPrimary, buttonSecondary } from "@/components/ui";
 import { ArrowIcon, SparkIcon } from "@/components/icons";
-
-type ChatPayload = { mode: "chat"; text: string; model: string };
 
 const QUICK_LINKS = [
   { href: "/assistant", title: "Ask about today", body: "Questions answered from the current readings." },
@@ -23,20 +23,13 @@ const QUICK_LINKS = [
 
 export default function DashboardPage() {
   const { air, loading, error, refresh, place } = useLocation();
-  const briefing = useAiRequest<ChatPayload>();
+  const briefing = useAiRequest<AiTextResponse>();
 
   function generateBriefing() {
     if (!air) return;
     briefing.run({
       mode: "chat",
-      lat: air.place.latitude,
-      lon: air.place.longitude,
-      place: {
-        name: air.place.name,
-        admin: air.place.admin,
-        country: air.place.country,
-        countryCode: air.place.countryCode,
-      },
+      ...groundedRequest(air),
       message:
         "Write a short personal briefing for today. Cover: what the air is like right now and which pollutant is driving it, the best window for outdoor activity, one change to my commute, and one thing to do at home. Keep it under 140 words.",
     });

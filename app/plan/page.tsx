@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useLocation } from "@/lib/location";
 import { useAiRequest } from "@/lib/use-ai";
+import { groundedRequest } from "@/lib/ai-client";
 import { AiErrorPanel, AiThinking } from "@/components/ai-status";
 import { RecommendationList } from "@/components/recommendation-list";
-import { BandPill } from "@/components/pollutant-grid";
+import { ReadingChips } from "@/components/reading-chips";
 import { Card, EmptyState, SectionHeading, buttonPrimary, fieldClass } from "@/components/ui";
 import { SparkIcon } from "@/components/icons";
-import type { RecommendationSet } from "@/lib/types";
-
-type PlanPayload = { mode: "plan"; data: RecommendationSet; model: string };
+import type { AiRecommendationsResponse } from "@/lib/types";
 
 type Profile = {
   routine: string;
@@ -64,20 +63,13 @@ const DEFAULT_PROFILE: Profile = {
 export default function PlanPage() {
   const { air, place } = useLocation();
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
-  const plan = useAiRequest<PlanPayload>();
+  const plan = useAiRequest<AiRecommendationsResponse<"plan">>();
 
   function generate() {
     if (!air) return;
     plan.run({
       mode: "plan",
-      lat: air.place.latitude,
-      lon: air.place.longitude,
-      place: {
-        name: air.place.name,
-        admin: air.place.admin,
-        country: air.place.country,
-        countryCode: air.place.countryCode,
-      },
+      ...groundedRequest(air),
       profile,
     });
   }
@@ -95,17 +87,7 @@ export default function PlanPage() {
         </p>
       </div>
 
-      {air ? (
-        <div className="mb-5 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
-          <span className="rounded-full border border-line bg-surface px-2.5 py-1">{place.name}</span>
-          {air.usAqi != null ? (
-            <span className="rounded-full border border-line bg-surface px-2.5 py-1">
-              US AQI {Math.round(air.usAqi)}
-            </span>
-          ) : null}
-          {air.usBand ? <BandPill band={air.usBand} /> : null}
-        </div>
-      ) : null}
+      {air ? <ReadingChips air={air} place={place} /> : null}
 
       <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">
         <Card>

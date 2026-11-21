@@ -14,6 +14,7 @@ import {
   useState,
 } from "react";
 import type { AirData, Place } from "./types";
+import { readJson } from "./http";
 
 const DEFAULT_PLACE: Place = {
   name: "New Delhi",
@@ -84,13 +85,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     setError(null);
 
     fetch(`/api/air?${placeQuery(place)}`, { signal: controller.signal })
-      .then(async (response) => {
-        const body = await response.json();
-        if (!response.ok) {
-          throw new Error(body?.error?.message ?? "Could not load air quality data.");
-        }
-        return body as AirData;
-      })
+      .then((response) => readJson<AirData>(response, "Could not load air quality data."))
       .then((data) => {
         if (id !== requestId.current) return;
         setAir(data);

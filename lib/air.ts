@@ -1,4 +1,4 @@
-import { computeCpcbAqi, pollutantScale, POLLUTANT_KEYS, POLLUTANT_META, usBand, windCompass } from "./aqi";
+import { computeCpcbAqi, POLLUTANT_KEYS, POLLUTANT_META, usBand, windCompass } from "./aqi";
 import type { AirData, Place, PollutantKey, PollutantReading, Weather } from "./types";
 
 const AIR_URL = "https://air-quality-api.open-meteo.com/v1/air-quality";
@@ -131,17 +131,13 @@ export async function getAirData(lat: number, lon: number, place: Place): Promis
     };
   }
 
-  const dryRun = Object.fromEntries(
-    POLLUTANT_KEYS.map((key) => [key, { value: pollutants[key].value, unit: "", usSubIndex: null }]),
-  ) as Record<PollutantKey, PollutantReading>;
-
   return {
     place,
     observedAt,
     timezone: air.timezone ?? "UTC",
     usAqi,
     usBand: usAqi == null ? null : usBand(usAqi),
-    cpcb: computeCpcbAqi(dryRun),
+    cpcb: computeCpcbAqi(pollutants),
     pollutants,
     weather,
     history: {
@@ -193,8 +189,4 @@ export async function searchCities(query: string): Promise<CityResult[]> {
     longitude: r.longitude,
     population: r.population,
   }));
-}
-
-export function pollutantShare(key: PollutantKey, value: number | null) {
-  return pollutantScale(key, value);
 }

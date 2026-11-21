@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { useLocation } from "@/lib/location";
 import { useAiRequest } from "@/lib/use-ai";
+import { groundedRequest } from "@/lib/ai-client";
 import { AiErrorPanel, AiThinking } from "@/components/ai-status";
 import { RecommendationList } from "@/components/recommendation-list";
-import { BandPill } from "@/components/pollutant-grid";
+import { ReadingChips } from "@/components/reading-chips";
 import { Card, EmptyState, SectionHeading, buttonPrimary, fieldClass } from "@/components/ui";
 import { SparkIcon } from "@/components/icons";
-import type { RecommendationSet } from "@/lib/types";
-
-type IndoorPayload = { mode: "indoor"; data: RecommendationSet; model: string };
+import type { AiRecommendationsResponse } from "@/lib/types";
 
 const BASICS = [
   {
@@ -44,20 +43,13 @@ export default function IndoorPage() {
   const [household, setHousehold] = useState(
     "Two adults in a second-floor flat with a gas stove and no exhaust fan.",
   );
-  const indoor = useAiRequest<IndoorPayload>();
+  const indoor = useAiRequest<AiRecommendationsResponse<"indoor">>();
 
   function generate() {
     if (!air) return;
     indoor.run({
       mode: "indoor",
-      lat: air.place.latitude,
-      lon: air.place.longitude,
-      place: {
-        name: air.place.name,
-        admin: air.place.admin,
-        country: air.place.country,
-        countryCode: air.place.countryCode,
-      },
+      ...groundedRequest(air),
       household,
     });
   }
@@ -76,20 +68,13 @@ export default function IndoorPage() {
       </div>
 
       {air ? (
-        <div className="mb-5 flex flex-wrap items-center gap-2 text-xs text-ink-soft">
-          <span className="rounded-full border border-line bg-surface px-2.5 py-1">{place.name}</span>
-          {air.usAqi != null ? (
-            <span className="rounded-full border border-line bg-surface px-2.5 py-1">
-              US AQI {Math.round(air.usAqi)}
-            </span>
-          ) : null}
-          {air.usBand ? <BandPill band={air.usBand} /> : null}
+        <ReadingChips air={air} place={place}>
           {air.pollutants.pm2_5.value != null ? (
             <span className="rounded-full border border-line bg-surface px-2.5 py-1">
               Outdoor PM2.5 {Math.round(air.pollutants.pm2_5.value)} µg/m³
             </span>
           ) : null}
-        </div>
+        </ReadingChips>
       ) : null}
 
       <div className="grid gap-5 lg:grid-cols-[0.85fr_1.15fr]">

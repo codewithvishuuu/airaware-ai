@@ -1,38 +1,31 @@
 "use client";
 
 import { useLocation } from "@/lib/location";
+import { pmTrend } from "@/lib/history";
+import type { AirData } from "@/lib/types";
 import { PollutantGrid, StaleNotice } from "@/components/pollutant-grid";
 import { TrendChart } from "@/components/trend-chart";
 import { WeatherStrip } from "@/components/weather-strip";
 import { Card, EmptyState, SectionHeading, Skeleton } from "@/components/ui";
 import { AlertIcon } from "@/components/icons";
 
+function thresholdAlert(air: AirData) {
+  if (air.usAqi != null && air.usAqi >= 151) {
+    return `US AQI ${Math.round(air.usAqi)} — ${air.usBand?.label}. Sensitive groups should avoid outdoor exertion.`;
+  }
+  if (air.cpcb && air.cpcb.aqi >= 201) {
+    return `CPCB AQI ${air.cpcb.aqi} — ${air.cpcb.band.label}. Reduce outdoor exposure where you can.`;
+  }
+  return null;
+}
+
 export default function InsightsPage() {
   const { air, place, loading, error } = useLocation();
 
-  const hourly = air?.history.pm25.filter((value): value is number => value != null) ?? [];
-  const last24 = hourly.slice(-24);
-  const previous48 = hourly.slice(-72, -24);
-  const average = (values: number[]) =>
-    values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : null;
-
-  const todayAvg = average(last24);
-  const earlierAvg = average(previous48);
-  const trendDirection =
-    todayAvg != null && earlierAvg != null
-      ? todayAvg > earlierAvg * 1.1
-        ? "rising"
-        : todayAvg < earlierAvg * 0.9
-          ? "falling"
-          : "steady"
-      : null;
-
-  const alert =
-    air?.usAqi != null && air.usAqi >= 151
-      ? `US AQI ${Math.round(air.usAqi)} — ${air.usBand?.label}. Sensitive groups should avoid outdoor exertion.`
-      : air?.cpcb && air.cpcb.aqi >= 201
-        ? `CPCB AQI ${air.cpcb.aqi} — ${air.cpcb.band.label}. Reduce outdoor exposure where you can.`
-        : null;
+  const trend = air ? pmTrend(air.history) : null;
+  const todayAvg = trend?.last24 ?? null;
+  const trendDirection = trend?.direction ?? null;
+  const alert = air ? thresholdAlert(air) : null;
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-10">

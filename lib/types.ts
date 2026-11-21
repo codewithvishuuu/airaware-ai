@@ -15,6 +15,13 @@ export type Place = {
   longitude: number;
 };
 
+/** The place fields the AI request may carry; coordinates travel separately. */
+export type AiPlace = Pick<Place, "name" | "admin" | "country" | "countryCode">;
+
+export type AqiStandard = "us" | "cpcb";
+
+export type History = { time: string[]; pm25: (number | null)[] };
+
 export type PollutantReading = {
   value: number | null;
   unit: string;
@@ -58,7 +65,7 @@ export type AirData = {
   cpcb: CpcbResult | null;
   pollutants: Record<PollutantKey, PollutantReading>;
   weather: Weather | null;
-  history: { time: string[]; pm25: (number | null)[] };
+  history: History;
   stale: boolean;
   fetchedAt: string;
 };
@@ -75,4 +82,19 @@ export type Recommendation = {
 export type RecommendationSet = {
   summary: string;
   items: Recommendation[];
+};
+
+/** Responses from `/api/ai`, keyed by the mode that produced them. */
+export type AiTextResponse = {
+  mode: "chat";
+  text: string;
+  model: string;
+  configured: boolean;
+};
+
+export type AiRecommendationsResponse<M extends "plan" | "indoor"> = {
+  mode: M;
+  data: RecommendationSet;
+  model: string;
+  configured: boolean;
 };

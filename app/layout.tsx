@@ -4,7 +4,7 @@ import "./globals.css";
 import { LocationProvider } from "@/lib/location";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { SITE_DESCRIPTION, SITE_NAME, SITE_URL } from "@/lib/site";
+import { SHARE_IMAGE, SITE_DESCRIPTION, SITE_NAME, SITE_TITLE, SITE_URL } from "@/lib/site";
 
 const manrope = Manrope({
   variable: "--font-manrope",
@@ -23,7 +23,7 @@ const instrumentSerif = Instrument_Serif({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "AirAware AI | The air you breathe. The choices you make.",
+    default: SITE_TITLE,
     template: `%s | ${SITE_NAME}`,
   },
   description: SITE_DESCRIPTION,
@@ -42,22 +42,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: SITE_NAME,
-    title: "AirAware AI | The air you breathe. The choices you make.",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: [
-      {
-        url: "/images/hero-city-haze.jpg",
-        width: 1800,
-        height: 1051,
-        alt: "A city skyline dissolving into morning haze above a canopy of trees.",
-      },
-    ],
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: "AirAware AI | The air you breathe. The choices you make.",
+    title: SITE_TITLE,
     description: SITE_DESCRIPTION,
-    images: ["/images/hero-city-haze.jpg"],
+    images: [SHARE_IMAGE.url],
   },
   robots: { index: true, follow: true },
 };

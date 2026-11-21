@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "@/lib/location";
 import type { CityResult } from "@/lib/air";
+import { readJson } from "@/lib/http";
 import { ChevronIcon, CloseIcon, LocateIcon, SearchIcon } from "./icons";
 import { fieldClass } from "./ui";
 
@@ -31,13 +32,12 @@ export function LocationButton() {
     const timer = setTimeout(() => {
       setSearching(true);
       fetch(`/api/cities?q=${encodeURIComponent(query.trim())}`)
-        .then(async (response) => {
-          const body = await response.json();
-          if (!response.ok) throw new Error(body?.error?.message ?? "Search failed.");
-          return body.results as CityResult[];
-        })
-        .then((found) => {
+        .then((response) =>
+          readJson<{ results?: CityResult[] }>(response, "Search failed."),
+        )
+        .then((body) => {
           if (cancelled) return;
+          const found = body.results ?? [];
           setResults(found);
           setSearchError(found.length ? null : "No matching city found.");
         })

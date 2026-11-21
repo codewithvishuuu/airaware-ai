@@ -1,13 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import type { AirData } from "@/lib/types";
+import type { AirData, AqiStandard } from "@/lib/types";
+import { formatObservedAt } from "@/lib/format";
 import { BandPill } from "./pollutant-grid";
 import { Card } from "./ui";
 import { HealthGuidance } from "./health-guidance";
 import { RefreshIcon } from "./icons";
-
-type Standard = "us" | "cpcb";
 
 export function AqiHero({
   air,
@@ -18,21 +17,13 @@ export function AqiHero({
   onRefresh: () => void;
   refreshing: boolean;
 }) {
-  const [standard, setStandard] = useState<Standard>("us");
+  const [standard, setStandard] = useState<AqiStandard>("us");
 
   const cpcb = air.cpcb;
   const value = standard === "us" ? air.usAqi : cpcb?.aqi ?? null;
   const band = standard === "us" ? air.usBand : cpcb?.band ?? null;
 
-  const updated = new Date(air.observedAt);
-  const updatedLabel = Number.isNaN(updated.getTime())
-    ? air.observedAt
-    : updated.toLocaleString(undefined, {
-        day: "numeric",
-        month: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-      });
+  const updatedLabel = formatObservedAt(air.observedAt) ?? air.observedAt;
 
   return (
     <div className="grid gap-4 lg:grid-cols-[1.05fr_0.95fr]">

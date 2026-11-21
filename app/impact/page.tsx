@@ -3,20 +3,20 @@
 import { useMemo, useState } from "react";
 import { useLocation } from "@/lib/location";
 import { useAiRequest } from "@/lib/use-ai";
+import { groundedRequest } from "@/lib/ai-client";
 import { computeImpact, formatKg, TRAVEL_MODES, weeklyDistance } from "@/lib/impact";
 import { AiErrorPanel, AiThinking } from "@/components/ai-status";
 import { AiText } from "@/components/recommendation-list";
 import { Card, SectionHeading, buttonPrimary, fieldClass } from "@/components/ui";
 import { SparkIcon } from "@/components/icons";
-
-type ChatPayload = { mode: "chat"; text: string; model: string };
+import type { AiTextResponse } from "@/lib/types";
 
 export default function ImpactPage() {
   const { air } = useLocation();
   const [oneWayKm, setOneWayKm] = useState(8);
   const [tripsPerWeek, setTripsPerWeek] = useState(10);
   const [mode, setMode] = useState("car");
-  const explain = useAiRequest<ChatPayload>();
+  const explain = useAiRequest<AiTextResponse>();
 
   const rows = useMemo(
     () => computeImpact({ oneWayKm, tripsPerWeek, mode }).sort((a, b) => a.weeklyGrams - b.weeklyGrams),
@@ -30,14 +30,7 @@ export default function ImpactPage() {
     if (!air || !selected) return;
     explain.run({
       mode: "chat",
-      lat: air.place.latitude,
-      lon: air.place.longitude,
-      place: {
-        name: air.place.name,
-        admin: air.place.admin,
-        country: air.place.country,
-        countryCode: air.place.countryCode,
-      },
+      ...groundedRequest(air),
       message: `I travel ${oneWayKm} km each way, ${tripsPerWeek} trips a week, so ${distance.toFixed(
         0,
       )} passenger-km weekly. My current option is "${selected.mode.label}" (${selected.mode.gramsPerPassengerKm} g CO2e per passenger-km). Compared with driving alone (150 g/km) that is ${
