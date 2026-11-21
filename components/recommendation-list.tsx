@@ -1,4 +1,7 @@
 import type { RecommendationSet } from "@/lib/types";
+import Markdown from "react-markdown";
+import remarkBreaks from "remark-breaks";
+import remarkGfm from "remark-gfm";
 import { AlertIcon } from "./icons";
 
 const DIFFICULTY_STYLE: Record<string, string> = {
@@ -59,51 +62,79 @@ export function RecommendationList({ set }: { set: RecommendationSet }) {
 }
 
 export function AiText({ text }: { text: string }) {
-  const lines = text.split(/\r?\n/);
-  const blocks: React.ReactNode[] = [];
-  let bullets: string[] = [];
-
-  const flushBullets = (key: string) => {
-    if (!bullets.length) return;
-    blocks.push(
-      <ul key={key} className="ml-4 list-disc space-y-1.5 text-sm leading-relaxed text-ink-soft">
-        {bullets.map((line, index) => (
-          <li key={index}>{line}</li>
-        ))}
-      </ul>,
+  if (!text.trim()) {
+    return (
+      <p className="text-sm leading-relaxed text-ink-muted">
+        No text came back from the model, so there is nothing to show. Try generating again.
+      </p>
     );
-    bullets = [];
-  };
+  }
 
-  lines.forEach((raw, index) => {
-    const line = raw.trim();
-    if (!line) {
-      flushBullets(`list-${index}`);
-      return;
-    }
-    if (/^[-*•]\s+/.test(line)) {
-      bullets.push(line.replace(/^[-*•]\s+/, ""));
-      return;
-    }
-    flushBullets(`list-${index}`);
-    if (/^limits:/i.test(line)) {
-      blocks.push(
-        <p
-          key={index}
-          className="rounded-lg border border-line bg-stone-50 px-3 py-2 text-[12px] leading-relaxed text-ink-muted"
-        >
-          {line}
-        </p>,
-      );
-      return;
-    }
-    blocks.push(
-      <p key={index} className="text-sm leading-relaxed text-ink-soft">
-        {line}
-      </p>,
-    );
-  });
-  flushBullets("list-end");
-
-  return <div className="space-y-2.5">{blocks}</div>;
+  return (
+    <div className="space-y-2.5 text-sm leading-relaxed text-ink-soft">
+      <Markdown
+        remarkPlugins={[remarkGfm, remarkBreaks]}
+        components={{
+          h1: ({ children }) => <h3 className="text-base font-semibold text-ink">{children}</h3>,
+          h2: ({ children }) => <h3 className="text-base font-semibold text-ink">{children}</h3>,
+          h3: ({ children }) => <h4 className="text-sm font-semibold text-ink">{children}</h4>,
+          h4: ({ children }) => <h5 className="text-sm font-semibold text-ink">{children}</h5>,
+          h5: ({ children }) => <h6 className="text-sm font-semibold text-ink">{children}</h6>,
+          h6: ({ children }) => <p className="text-sm font-semibold text-ink">{children}</p>,
+          p: ({ children }) => {
+            const raw = typeof children === "string" ? children : null;
+            if (raw && /^limits:/i.test(raw.trim())) {
+              return (
+                <p className="rounded-lg border border-line bg-stone-50 px-3 py-2 text-[12px] leading-relaxed text-ink-muted">
+                  {children}
+                </p>
+              );
+            }
+            return <p>{children}</p>;
+          },
+          strong: ({ children }) => <strong className="font-semibold text-ink">{children}</strong>,
+          ul: ({ children }) => <ul className="list-disc space-y-1 pl-4">{children}</ul>,
+          ol: ({ children }) => <ol className="list-decimal space-y-1 pl-4">{children}</ol>,
+          li: ({ children }) => <li className="pl-0.5">{children}</li>,
+          a: ({ children, href }) => (
+            <a
+              href={href}
+              className="underline decoration-line-strong underline-offset-2 hover:decoration-ink"
+              rel="noreferrer noopener"
+              target="_blank"
+            >
+              {children}
+            </a>
+          ),
+          code: ({ children }) => (
+            <code className="rounded bg-stone-100 px-1 py-0.5 font-mono text-[12px] text-ink">
+              {children}
+            </code>
+          ),
+          pre: ({ children }) => (
+            <pre className="overflow-x-auto rounded-lg border border-line bg-stone-50 p-3 text-[12px]">
+              {children}
+            </pre>
+          ),
+          blockquote: ({ children }) => (
+            <blockquote className="border-l-2 border-line-strong pl-3 text-ink-soft">
+              {children}
+            </blockquote>
+          ),
+          hr: () => <hr className="border-line" />,
+          table: ({ children }) => (
+            <div className="overflow-x-auto">
+              <table className="w-full border-collapse text-[13px]">{children}</table>
+            </div>
+          ),
+          th: ({ children }) => (
+            <th className="border-b border-line pb-1 pr-3 text-left font-medium text-ink">{children}</th>
+          ),
+          td: ({ children }) => <td className="border-b border-line py-1 pr-3 align-top">{children}</td>,
+        }}
+      >
+        {text}
+      </Markdown>
+    </div>
+  );
 }
