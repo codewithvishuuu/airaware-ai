@@ -46,6 +46,13 @@ describe("parseStoredPlace", () => {
     ).toBeNull();
   });
 
+  it("rejects out-of-range coordinates", () => {
+    expect(parseStoredPlace(JSON.stringify({ name: "X", latitude: 91, longitude: 20 }))).toBeNull();
+    expect(parseStoredPlace(JSON.stringify({ name: "X", latitude: -91, longitude: 20 }))).toBeNull();
+    expect(parseStoredPlace(JSON.stringify({ name: "X", latitude: 10, longitude: 181 }))).toBeNull();
+    expect(parseStoredPlace(JSON.stringify({ name: "X", latitude: 10, longitude: -181 }))).toBeNull();
+  });
+
   it("treats absent optional fields as absent rather than inventing values", () => {
     expect(parseStoredPlace(JSON.stringify({ name: "X", latitude: 10, longitude: 20 }))).toEqual({
       name: "X",

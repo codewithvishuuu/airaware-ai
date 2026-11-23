@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SHARE_IMAGE, SITE_DASHBOARD_DESCRIPTION, SITE_DASHBOARD_TITLE } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Dashboard",
@@ -8,24 +9,15 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     url: "/dashboard",
-    title: "Live air quality dashboard | AirAware AI",
-    description:
-      "US and CPCB indices side by side, six pollutant concentrations, weather context and a seven day PM2.5 trend for your city.",
-    images: [
-      {
-        url: "/images/hero-city-haze.jpg",
-        width: 1800,
-        height: 1051,
-        alt: "A city skyline dissolving into morning haze above a canopy of trees.",
-      },
-    ],
+    title: SITE_DASHBOARD_TITLE,
+    description: SITE_DASHBOARD_DESCRIPTION,
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Live air quality dashboard | AirAware AI",
-    description:
-      "US and CPCB indices side by side, six pollutant concentrations, weather context and a seven day PM2.5 trend for your city.",
-    images: ["/images/hero-city-haze.jpg"],
+    title: SITE_DASHBOARD_TITLE,
+    description: SITE_DASHBOARD_DESCRIPTION,
+    images: [SHARE_IMAGE.url],
   },
 };
 

@@ -2,6 +2,9 @@ export const SITE_URL = "https://airaware-ai-nine.vercel.app";
 export const GITHUB_URL = "https://github.com/codewithvishuuu/airaware-ai";
 export const SITE_NAME = "AirAware AI";
 export const SITE_TITLE = "AirAware AI | The air you breathe. The choices you make.";
+export const SITE_DASHBOARD_TITLE = "Live air quality dashboard | AirAware AI";
+export const SITE_DASHBOARD_DESCRIPTION =
+  "US and CPCB indices side by side, six pollutant concentrations, weather context and a seven day PM2.5 trend for your city.";
 export const SHARE_IMAGE = {
   url: "/images/hero-city-haze.jpg",
   width: 1800,

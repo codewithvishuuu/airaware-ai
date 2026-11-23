@@ -177,7 +177,8 @@ async function withFallback<T>(run: (model: string) => Promise<T>): Promise<T> {
     } catch (error) {
       lastError = error;
       if (!retryable(error) || index === sequence.length - 1) break;
-      console.warn(`[ai] ${model} failed (${(error as AiError).code ?? "error"}), retrying`);
+      const code = error instanceof AiError ? error.code : "error";
+      console.warn(`[ai] ${model} failed (${code}), retrying`);
       await new Promise((resolve) => setTimeout(resolve, 700));
     }
   }

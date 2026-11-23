@@ -64,6 +64,10 @@ export function parseStoredPlace(raw: string): Place | null {
     !Number.isFinite(latitude) ||
     typeof longitude !== "number" ||
     !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180 ||
     (admin != null && typeof admin !== "string") ||
     (country != null && typeof country !== "string") ||
     (countryCode != null && typeof countryCode !== "string")
