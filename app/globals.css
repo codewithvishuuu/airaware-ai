@@ -14,6 +14,7 @@
   --color-muted: #858991;
   --color-accent: #315cff;
   --color-accent-soft: #dce6ff;
+  --color-live: #15803d;
 
   --font-sans: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
   --font-serif: var(--font-instrument-serif), ui-serif, Georgia, serif;
@@ -49,6 +50,11 @@ body {
   outline: 2px solid var(--color-accent);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* On cobalt and ink surfaces a cobalt ring disappears, so invert it there. */
+.on-dark :focus-visible {
+  outline-color: #ffffff;
 }
 
 /* Numeric data reads better with fixed-width digits. */

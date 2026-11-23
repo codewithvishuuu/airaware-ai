@@ -80,8 +80,8 @@ export default function LandingPage() {
               </h1>
 
               <p className="hero-in mt-7 max-w-[42ch] text-[17px] leading-[1.65] text-ink-soft [animation-delay:120ms]">
-                Live, modelled air quality for your city, explained clearly and tied to the choices
-                you make today.
+                Live, modelled air quality for your city, with the source and the choices behind
+                every reading.
               </p>
 
               <div className="hero-in mt-8 flex flex-wrap gap-3 [animation-delay:220ms]">
@@ -289,7 +289,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="bg-accent text-white">
+      <section className="on-dark bg-accent text-white">
         <div className="mx-auto max-w-[1440px] px-5 py-24 sm:px-8 sm:py-32 lg:px-12">
           <div data-reveal>
             <h2 className="max-w-[18ch] pb-2 font-serif text-[clamp(2.5rem,5.2vw,4.6rem)] italic leading-[1.08] tracking-[-0.02em]">

@@ -44,7 +44,7 @@ export function HeroReading({ className = "" }: { className?: string }) {
         </div>
         <span className="inline-flex items-center gap-1.5 pt-0.5 text-[10px] font-medium uppercase tracking-[0.12em] text-ink-muted">
           <span
-            className="h-1.5 w-1.5 rounded-full bg-[#15803d] motion-safe:animate-pulse"
+            className="h-1.5 w-1.5 rounded-full bg-live motion-safe:animate-pulse"
             aria-hidden="true"
           />
           Modelled
@@ -132,7 +132,7 @@ export function LiveAirSection() {
         <div className="mt-12 border border-line-strong bg-surface">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-4 sm:px-7">
             <div className="flex items-center gap-3">
-              <span className="h-2 w-2 rounded-full bg-[#15803d]" aria-hidden="true" />
+              <span className="h-2 w-2 rounded-full bg-live" aria-hidden="true" />
               <p className="text-sm font-medium text-ink">
                 {place.name}
                 {place.country ? (

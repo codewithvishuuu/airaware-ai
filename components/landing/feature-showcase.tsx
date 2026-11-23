@@ -66,8 +66,8 @@ export function FeatureShowcase() {
           Six ways to work with the same reading.
         </h2>
         <p className="mt-5 max-w-xl text-[15px] leading-[1.7] text-ink-soft">
-          One live data source, six different jobs. The panels below read the same endpoint as the
-          product, so what you see here is what the app shows.
+          One live endpoint, six different jobs. Every panel below reads the same data the product
+          uses.
         </p>
 
         <div className="mt-16 space-y-24 sm:mt-20 sm:space-y-28">
@@ -171,7 +171,7 @@ export function FeatureShowcase() {
               <FeatureLink href="/assistant" label="Meet AI Assistant" />
             </div>
 
-            <div className="mt-8 bg-ink text-canvas">
+            <div className="on-dark mt-8 bg-ink text-canvas">
               <div className="grid lg:grid-cols-[1.35fr_0.65fr]">
                 <div className="border-b border-white/15 p-5 sm:p-8 lg:border-b-0 lg:border-r">
                   <div className="flex items-center justify-between gap-3 border-b border-white/15 pb-4">
@@ -404,7 +404,7 @@ export function FeatureShowcase() {
                     step={1}
                     value={distance}
                     onChange={(event) => setDistance(Number(event.target.value))}
-                    className="mt-3 w-full accent-[#315cff]"
+                    className="mt-3 w-full accent-accent"
                   />
                   <p className="mt-2 text-[11px] text-ink-muted">Ten round trips each week.</p>
 
