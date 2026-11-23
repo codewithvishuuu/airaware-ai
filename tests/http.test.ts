@@ -1,5 +1,16 @@
 import { describe, expect, it } from "vitest";
-import { ApiRequestError, numberParam, readJson } from "@/lib/http";
+import { apiError, ApiRequestError, numberParam, readJson } from "@/lib/http";
+
+describe("apiError", () => {
+  it("keeps the shared response envelope and status", async () => {
+    const response = apiError(429, "rate_limited", "Wait a minute.", { "Retry-After": "60" });
+    expect(response.status).toBe(429);
+    expect(response.headers.get("Retry-After")).toBe("60");
+    await expect(response.json()).resolves.toEqual({
+      error: { code: "rate_limited", message: "Wait a minute." },
+    });
+  });
+});
 
 describe("numberParam", () => {
   const params = (query: string) => new URLSearchParams(query);

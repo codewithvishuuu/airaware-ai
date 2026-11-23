@@ -75,7 +75,7 @@ Browser (client components)
 - Timeouts are **not** retried: the per-call budget is already spent
 - 400s are **not** retried: a malformed request fails the same way twice
 - 404s **are** retried on the next model: that means a retired model name
-- Structured output is validated with zod. A response that parses but has the wrong shape is discarded, never half-rendered
+- Gemini response envelopes and structured output are validated with zod. A response that parses but has the wrong shape is discarded, never half-rendered
 
 ---
 
@@ -171,15 +171,23 @@ app/
   page.tsx                landing page
   dashboard/page.tsx      dashboard
   assistant|plan|indoor|impact|insights/page.tsx
-components/               hero, pollutants, trend, weather, AI states, header
+components/               hero, pollutants, trend, weather, AI states, header, reading chips
 components/landing/       landing data views, feature previews, reveal observer
 lib/
   aqi.ts                  US + CPCB bands, CPCB computation
   air.ts                  Open-Meteo clients, stale detection
-  ai.ts                   Gemini client, fallback chain, prompts, schema
+  ai.ts                   Gemini client, fallback chain, prompts, schemas
+  ai-client.ts            grounded /api/ai request payload
+  format.ts               observed-at formatting shared by hero and landing
+  health-guidance.ts      tier mapping and advice copy
+  history.ts              PM2.5 series, averages and trend direction
+  http.ts                 API error envelope, response reader, query parsing
   impact.ts               deterministic emission factors
   location.tsx            place state + fetch lifecycle
   rate-limit.ts           per-client token bucket
+  site.ts                 shared site metadata constants
+  types.ts                shared domain and API response types
+  use-ai.ts               AI request hook
 tests/                    vitest
 e2e/                      playwright + axe
 ```

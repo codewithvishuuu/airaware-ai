@@ -155,6 +155,27 @@ describe("capacity errors", () => {
   });
 });
 
+describe("malformed provider responses", () => {
+  const json = (body: string) =>
+    new Response(body, { status: 200, headers: { "content-type": "application/json" } });
+
+  for (const [label, body] of [
+    ["null body", "null"],
+    ["wrong shape", JSON.stringify({ candidates: "unexpected" })],
+    ["non-text parts", JSON.stringify({ candidates: [{ content: { parts: [{ text: 42 }] } }] })],
+  ] as const) {
+    it(`turns a ${label} into bad_output without retrying`, async () => {
+      const fetchMock = vi.fn().mockResolvedValue(json(body));
+      vi.stubGlobal("fetch", fetchMock);
+
+      const error = await generateText("system", "prompt").catch((caught: unknown) => caught);
+      expect(error).toBeInstanceOf(AiError);
+      expect((error as AiError).code).toBe("bad_output");
+      expect(fetchMock).toHaveBeenCalledTimes(1);
+    });
+  }
+});
+
 describe("structured recommendations", () => {
   const valid = {
     summary: "Keep windows closed until the evening.",

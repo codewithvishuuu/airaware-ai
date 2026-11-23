@@ -43,6 +43,44 @@ type LocationContextValue = {
 
 const LocationContext = createContext<LocationContextValue | null>(null);
 
+/** localStorage is user-controlled, so accept only a fully shaped place. */
+export function parseStoredPlace(raw: string): Place | null {
+  let value: unknown;
+  try {
+    value = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  if (typeof value !== "object" || value === null) return null;
+
+  const { name, admin, country, countryCode, latitude, longitude } = value as Record<
+    string,
+    unknown
+  >;
+  if (
+    typeof name !== "string" ||
+    !name ||
+    typeof latitude !== "number" ||
+    !Number.isFinite(latitude) ||
+    typeof longitude !== "number" ||
+    !Number.isFinite(longitude) ||
+    (admin != null && typeof admin !== "string") ||
+    (country != null && typeof country !== "string") ||
+    (countryCode != null && typeof countryCode !== "string")
+  ) {
+    return null;
+  }
+
+  return {
+    name,
+    ...(typeof admin === "string" ? { admin } : {}),
+    ...(typeof country === "string" ? { country } : {}),
+    ...(typeof countryCode === "string" ? { countryCode } : {}),
+    latitude,
+    longitude,
+  };
+}
+
 function placeQuery(place: Place) {
   const params = new URLSearchParams({
     lat: String(place.latitude),
@@ -68,14 +106,9 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const stored = window.localStorage.getItem(STORAGE_KEY);
     if (!stored) return;
-    try {
-      const parsed = JSON.parse(stored) as Place;
-      if (Number.isFinite(parsed.latitude) && Number.isFinite(parsed.longitude) && parsed.name) {
-        setPlaceState(parsed);
-      }
-    } catch {
-      window.localStorage.removeItem(STORAGE_KEY);
-    }
+    const parsed = parseStoredPlace(stored);
+    if (parsed) setPlaceState(parsed);
+    else window.localStorage.removeItem(STORAGE_KEY);
   }, []);
 
   useEffect(() => {

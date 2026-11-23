@@ -75,10 +75,26 @@ const recommendationValidator = z.object({
     .min(1),
 });
 
-type GeminiResponse = {
-  candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
-  promptFeedback?: { blockReason?: string };
-};
+/** Only the fields the app consumes are required; extra provider fields are kept. */
+const geminiResponseSchema = z
+  .object({
+    candidates: z
+      .array(
+        z
+          .object({
+            content: z
+              .object({
+                parts: z.array(z.object({ text: z.string().nullish() }).passthrough()).optional(),
+              })
+              .passthrough()
+              .optional(),
+          })
+          .passthrough(),
+      )
+      .optional(),
+    promptFeedback: z.object({ blockReason: z.string().nullish() }).passthrough().optional(),
+  })
+  .passthrough();
 
 async function callGemini(
   model: string,
@@ -120,8 +136,11 @@ async function callGemini(
     throw new AiError("upstream", `The AI model returned ${response.status}.`);
   }
 
-  const data = (await response.json()) as GeminiResponse;
-  const text = (data.candidates?.[0]?.content?.parts ?? [])
+  const parsed = geminiResponseSchema.safeParse(await response.json());
+  if (!parsed.success) {
+    throw new AiError("bad_output", "The AI model returned an unexpected response shape.");
+  }
+  const text = (parsed.data.candidates?.[0]?.content?.parts ?? [])
     .map((part) => part.text ?? "")
     .join("")
     .trim();
@@ -129,7 +148,7 @@ async function callGemini(
   if (!text) {
     throw new AiError(
       "bad_output",
-      data.promptFeedback?.blockReason
+      parsed.data.promptFeedback?.blockReason
         ? "The AI model declined to answer this request."
         : "The AI model returned an empty answer.",
     );
